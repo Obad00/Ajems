@@ -1,0 +1,33 @@
+# Dependencies & build
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Local project notes (not tracked, see BRIEF §10)
+CLAUDE.md
+
+# Generated screenshots
+captures/
+
+# Test & tooling output
+coverage
+test-results
+playwright-report
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.sw?
