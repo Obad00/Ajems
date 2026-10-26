@@ -29,16 +29,24 @@ await server.listen()
 const base = 'http://localhost:5199'
 const browser = await chromium.launch()
 
-await rm('captures', { recursive: true, force: true })
 
 try {
   for (const device of VIEWPORTS) {
     const dir = `captures/${device.name}`
+    await rm(dir, { recursive: true, force: true }) // only this run's folder: keeps captures/avant etc.
     await mkdir(dir, { recursive: true })
     const context = await browser.newContext({ ...device, locale: 'fr-FR', reducedMotion: 'reduce' })
     let n = 0
     const shot = async (page, name) => {
       await page.evaluate(() => document.fonts.ready)
+      // Scroll through the page so that scroll-reveal sections are shown, then back to the top.
+      await page.evaluate(async () => {
+        for (let y = 0; y < document.body.scrollHeight; y += 400) {
+          window.scrollTo(0, y)
+          await new Promise((r) => setTimeout(r, 30))
+        }
+      })
+      await page.waitForTimeout(800)
       await page.evaluate(() => window.scrollTo(0, 0))
       n += 1
       await page.screenshot({ path: `${dir}/${String(n).padStart(2, '0')}-${name}.png`, fullPage: true, animations: 'disabled' })
@@ -151,6 +159,7 @@ try {
     // ---------- Public pages ----------
     const pub = await context.newPage()
     await pub.goto(`${base}/`)
+    await pub.waitForTimeout(3200) // street plan finishes drawing
     await shot(pub, 'accueil')
     await pub.getByText("L'adhésion garantit-elle un financement ?").click()
     await pub.evaluate(() => document.fonts.ready)

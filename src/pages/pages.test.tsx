@@ -12,7 +12,10 @@ function renderAt(path: string) {
 describe('public pages', () => {
   it('home: title, main call to action and the financing FAQ answer', async () => {
     renderAt('/')
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent("Ensemble, faisons grandir l'entrepreneuriat à Mermoz-Sacré-Cœur.")
+    const title = screen.getByRole('heading', { level: 1 })
+    expect(title).toHaveTextContent(/^Ensemble, faisons grandir l'entrepreneuriat à Mermoz[-\u2011]Sacré[-\u2011]Cœur\.$/)
+    // The place name must never break: non-breaking hyphens (U+2011).
+    expect(title.textContent).toContain('Mermoz\u2011Sacré\u2011Cœur')
     expect(screen.getAllByRole('link', { name: /Demander mon adhésion/ }).length).toBeGreaterThan(0)
 
     const question = screen.getByText("L'adhésion garantit-elle un financement ?")

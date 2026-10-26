@@ -1,16 +1,17 @@
 @import "tailwindcss";
-@import "@fontsource-variable/public-sans";
-@import "@fontsource-variable/source-serif-4";
+@import "@fontsource-variable/fraunces/opsz.css";
+@import "@fontsource-variable/fraunces/opsz-italic.css";
+@import "@fontsource-variable/ibm-plex-sans";
 
 /*
- * AJEMS design tokens.
+ * AJEMS design tokens — direction « Le journal du quartier ».
  * Contrast ratios (WCAG) are noted for text pairs. Gold (#C6A45A) is 2.37:1 on white:
  * never use it for text on light backgrounds — use gold-ink instead.
  */
 @theme {
   --color-navy: #0b1f3a; /* 16.5:1 on white */
   --color-navy-2: #17365d; /* white text 12.2:1 */
-  --color-gold: #c6a45a; /* borders, icons, details; text only on navy (7:1) */
+  --color-gold: #c6a45a; /* lines, icons, details; text only on navy (7:1) */
   --color-gold-ink: #7d6327; /* gold-tinted text on white (5.7:1) */
   --color-gold-soft: #f7f1e3;
   --color-surface: #f5f7fa;
@@ -25,8 +26,10 @@
   --color-success: #1e6b45;
   --color-success-soft: #ecf7f1;
 
-  --font-sans: "Public Sans Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces Variable", Georgia, "Times New Roman", serif;
+
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 @layer base {
@@ -35,24 +38,24 @@
     scroll-behavior: smooth;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-  }
-
   body {
     @apply bg-surface font-sans text-ink antialiased;
     font-size: 1rem;
-    line-height: 1.6;
+    line-height: 1.65;
   }
 
   h1,
   h2,
   h3 {
     @apply font-serif text-navy;
-    line-height: 1.2;
+    font-optical-sizing: auto;
+    line-height: 1.08;
+    letter-spacing: -0.015em;
     text-wrap: balance;
+  }
+
+  em {
+    font-style: italic;
   }
 
   /* Visible focus everywhere: navy ring on light surfaces. */
@@ -61,7 +64,7 @@
     outline-offset: 2px;
   }
 
-  /* Gold ring on dark surfaces (header, primary buttons). */
+  /* Gold ring on dark surfaces (header, hero, primary buttons). */
   .on-dark :focus-visible,
   .on-dark:focus-visible {
     outline-color: var(--color-gold);
@@ -72,6 +75,123 @@
   select,
   textarea {
     font-size: 1rem;
+  }
+}
+
+@layer components {
+  /* Underline that draws itself on hover / focus. */
+  .link-draw {
+    background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat;
+    transition: background-size 0.35s var(--ease-out-soft);
+  }
+  .link-draw:hover,
+  .link-draw:focus-visible,
+  .link-draw[aria-current="page"] {
+    background-size: 100% 1px;
+  }
+
+  /* Street plan (inline SVG from src/assets/mermoz-map.svg). */
+  .street-map svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .street-map--draw .map-major path {
+    stroke-dasharray: 1400;
+    stroke-dashoffset: 1400;
+    animation: map-draw 2.6s var(--ease-out-soft) 0.2s forwards;
+  }
+  .street-map--draw .map-minor {
+    animation: map-fade 1.6s ease-out 1.2s both;
+  }
+  .street-map--draw .map-outline {
+    animation: map-fade 1s ease-out 2.4s both;
+  }
+
+  /* Reveal on scroll (set by <Reveal>, only when IntersectionObserver exists and motion is allowed). */
+  [data-reveal="pending"] {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  [data-reveal="done"] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s var(--ease-out-soft),
+      transform 0.7s var(--ease-out-soft);
+  }
+
+  /* Continuous marquee (sectors). The track holds the list twice. */
+  .marquee-track {
+    animation: marquee 48s linear infinite;
+  }
+  .marquee[data-paused="true"] .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* Form steps slide sideways. */
+  .step-enter[data-dir="forward"] {
+    animation: step-in-right 0.4s var(--ease-out-soft);
+  }
+  .step-enter[data-dir="back"] {
+    animation: step-in-left 0.4s var(--ease-out-soft);
+  }
+}
+
+@keyframes map-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes map-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes step-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(2rem);
+  }
+}
+@keyframes step-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-2rem);
+  }
+}
+
+/* Reduced motion: everything is shown in its final state, nothing moves. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .street-map--draw .map-major path {
+    stroke-dashoffset: 0;
+  }
+  .marquee-track {
+    animation: none !important;
+    flex-wrap: wrap;
+    width: auto !important;
+  }
+  .marquee-dup {
+    display: none;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 

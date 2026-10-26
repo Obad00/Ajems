@@ -90,5 +90,12 @@ export const PRIVACY = {
       ['Contact', '[À VALIDER]'],
       ['Hébergeur du site', '[À VALIDER] (Vercel, Netlify ou Hostinger selon le choix de déploiement)'],
     ] as const,
+    /** ODbL attribution for the street plan (scripts/build-map.mjs). */
+    mapCredit: {
+      label: 'Fond de plan',
+      text: 'Plan des rues de Mermoz-Sacré-Cœur simplifié à partir des données © les contributeurs OpenStreetMap, disponibles sous licence ODbL.',
+      href: 'https://www.openstreetmap.org/copyright',
+      linkLabel: 'openstreetmap.org/copyright',
+    },
   },
 } as const
