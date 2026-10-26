@@ -1,1 +1,119 @@
 @import "tailwindcss";
+@import "@fontsource-variable/public-sans";
+@import "@fontsource-variable/source-serif-4";
+
+/*
+ * AJEMS design tokens.
+ * Contrast ratios (WCAG) are noted for text pairs. Gold (#C6A45A) is 2.37:1 on white:
+ * never use it for text on light backgrounds — use gold-ink instead.
+ */
+@theme {
+  --color-navy: #0b1f3a; /* 16.5:1 on white */
+  --color-navy-2: #17365d; /* white text 12.2:1 */
+  --color-gold: #c6a45a; /* borders, icons, details; text only on navy (7:1) */
+  --color-gold-ink: #7d6327; /* gold-tinted text on white (5.7:1) */
+  --color-gold-soft: #f7f1e3;
+  --color-surface: #f5f7fa;
+  --color-ink: #263238; /* 12.3:1 on surface */
+  --color-muted: #55636b; /* 5.8:1 on surface */
+  --color-line: #d9dee5; /* decorative separators only */
+  --color-field: #8a95a0; /* input borders, 3:1 on white */
+  --color-danger: #b42318;
+  --color-danger-soft: #fef3f2;
+  --color-warn: #7a4e00;
+  --color-warn-soft: #fff6e0;
+  --color-success: #1e6b45;
+  --color-success-soft: #ecf7f1;
+
+  --font-sans: "Public Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-surface font-sans text-ink antialiased;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif text-navy;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  /* Visible focus everywhere: navy ring on light surfaces. */
+  :focus-visible {
+    outline: 3px solid var(--color-navy);
+    outline-offset: 2px;
+  }
+
+  /* Gold ring on dark surfaces (header, primary buttons). */
+  .on-dark :focus-visible,
+  .on-dark:focus-visible {
+    outline-color: var(--color-gold);
+  }
+
+  /* Inputs at 16px minimum so iOS does not zoom on focus. */
+  input,
+  select,
+  textarea {
+    font-size: 1rem;
+  }
+}
+
+/* Print: A4, no navigation or footer, plain black on white. */
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 11pt;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-plain {
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    max-width: none !important;
+    background: transparent !important;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #000;
+    break-after: avoid;
+  }
+
+  article,
+  section {
+    break-inside: avoid-page;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
