@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { ArrowRight, Plus } from 'lucide-react'
 import { HOME } from '../content/home'
+import { StatsSection } from './StatsSection'
 import { PHOTOS } from '../content/photos'
 import { SECTORS } from '../schemas/common'
 import { ButtonLink } from '../ui/Button'
@@ -94,6 +95,8 @@ export function HomePage() {
           ))}
         </ol>
       </section>
+
+      <StatsSection />
 
       {/* Manifesto: front-page band between two rules */}
       <section aria-labelledby="manifeste" className="on-dark bg-navy text-white">

@@ -1,4 +1,5 @@
 import type { MemberInput } from '../schemas/member'
+import { computePublicStats, type PublicStats } from '../services/stats'
 import { StorageError, type CreateResult, type Member, type MemberRepository, type MemberStatus } from './MemberRepository'
 
 type Options = {
@@ -9,6 +10,8 @@ type Options = {
   /** When true, every write fails (used to test and demo the error state). */
   failWrites?: boolean
   now?: () => Date
+  /** Fixed fictitious public figures (demo); computed from the members otherwise. */
+  stats?: PublicStats
 }
 
 /** In-memory repository: data lives in the page and disappears on reload. Fictitious data only. */
@@ -19,13 +22,15 @@ export class MockRepository implements MemberRepository {
   private readonly latency: number
   private readonly failWrites: boolean
   private readonly now: () => Date
+  private readonly stats: PublicStats | undefined
 
-  constructor({ seed = [], latency = 0, failWrites = false, now = () => new Date() }: Options = {}) {
+  constructor({ seed = [], latency = 0, failWrites = false, now = () => new Date(), stats }: Options = {}) {
     this.members = [...seed]
     this.sequence = seed.length
     this.latency = latency
     this.failWrites = failWrites
     this.now = now
+    this.stats = stats
   }
 
   private wait() {
@@ -57,6 +62,11 @@ export class MockRepository implements MemberRepository {
   async getById(id: string): Promise<Member | null> {
     await this.wait()
     return this.members.find((m) => m.id === id) ?? null
+  }
+
+  async getPublicStats(): Promise<PublicStats> {
+    await this.wait()
+    return this.stats ?? computePublicStats(this.members)
   }
 
   async updateStatus(id: string, status: MemberStatus): Promise<void> {

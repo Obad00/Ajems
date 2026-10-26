@@ -1,13 +1,12 @@
 import { createContext, useContext } from 'react'
 import { storageKind } from '../storage'
 import type { AdminSession, AuthService } from './AuthService'
+import { getSupabaseClient } from '../storage/supabaseClient'
 import { MockAuthService } from './MockAuthService'
+import { SupabaseAuthService } from './SupabaseAuthService'
 
 export function createAuth(): AuthService {
-  if (storageKind() === 'supabase') {
-    // SupabaseAuthService arrives in step 5 of the plan (BRIEF §11).
-    throw new Error('VITE_STORAGE=supabase is not available yet: use VITE_STORAGE=mock.')
-  }
+  if (storageKind() === 'supabase') return new SupabaseAuthService(getSupabaseClient())
   return new MockAuthService()
 }
 

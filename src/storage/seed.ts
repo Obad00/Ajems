@@ -1,5 +1,6 @@
 import { REGLEMENT } from '../content/reglement'
 import type { Sector, Need, MemberType, ZoneLink } from '../schemas/common'
+import type { PublicStats } from '../services/stats'
 import type { Member, MemberStatus } from './MemberRepository'
 
 /*
@@ -61,4 +62,13 @@ export function demoMembers(now = new Date()): Member[] {
       accuracy_confirmed: true,
     }
   })
+}
+
+/** Fictitious public figures for the demo home page (shown with a « démonstration » mention). */
+export const DEMO_STATS: PublicStats = {
+  members_accepted: 24,
+  requests_received: 41,
+  entrepreneurs: 26,
+  project_holders: 13,
+  sectors_represented: 11,
 }

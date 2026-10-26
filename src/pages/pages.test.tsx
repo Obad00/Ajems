@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
 import { MockRepository } from '../storage/MockRepository'
+import { DEMO_STATS } from '../storage/seed'
 
 function renderAt(path: string) {
   window.history.pushState({}, '', path)
@@ -52,5 +53,20 @@ describe('public pages', () => {
   it('unknown path shows the 404 page', () => {
     renderAt('/nimporte-quoi')
     expect(screen.getByRole('heading', { name: 'Page introuvable' })).toBeInTheDocument()
+  })
+
+  it('home stats: computed figures with the demo mention, small figures hidden', async () => {
+    window.history.pushState({}, '', '/')
+    render(<App repository={new MockRepository({ stats: { ...DEMO_STATS, project_holders: null } })} />)
+    const block = await screen.findByRole('region', { name: "L'AJEMS en chiffres" })
+    expect(block).toHaveTextContent('Démonstration — chiffres fictifs')
+    expect(block).toHaveTextContent('24')
+    expect(block).toHaveTextContent('membres acceptés')
+    expect(block).not.toHaveTextContent('porteurs de projet')
+  })
+
+  it('home stats: below the threshold, says that membership is open', async () => {
+    renderAt('/')
+    expect(await screen.findByText('Les adhésions sont ouvertes.')).toBeInTheDocument()
   })
 })

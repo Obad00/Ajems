@@ -48,12 +48,16 @@ export const PRIVACY = {
       paragraphs: [
         "Seuls les membres du bureau habilités, via un espace d'administration protégé par mot de passe. Les données ne sont ni vendues ni cédées.",
         "Le site public peut uniquement enregistrer une fiche : il ne permet ni de la lire, ni de la modifier.",
+        "Les chiffres affichés sur l'accueil sont des totaux calculés automatiquement. Un total inférieur à 10 n'est jamais publié, pour qu'aucune personne ne puisse être reconnue.",
       ],
     },
     {
       id: 'hebergement',
       title: 'Hébergement des données',
-      paragraphs: ['Les fiches sont stockées chez le prestataire Supabase. Région d’hébergement : [À VALIDER].'],
+      paragraphs: [
+        "Les fiches sont stockées chez le prestataire Supabase, dans un centre de données situé dans l'Union européenne (Francfort, Allemagne), donc hors du Sénégal.",
+        'Ce transfert de données hors du Sénégal doit être vérifié auprès de la Commission de protection des Données Personnelles (CDP). [À VALIDER]',
+      ],
     },
     {
       id: 'conservation',
@@ -72,13 +76,14 @@ export const PRIVACY = {
       title: 'Cookies et navigateur',
       paragraphs: [
         "Le site n'utilise ni cookies publicitaires ni mesure d'audience. Le formulaire n'enregistre rien dans votre navigateur : vos réponses restent en mémoire jusqu'à l'envoi.",
+        "Pour les membres du bureau, la session de l'espace d'administration est elle aussi gardée en mémoire seulement : elle se ferme en rechargeant la page.",
       ],
     },
     {
       id: 'cdp',
       title: 'Cadre légal',
       paragraphs: [
-        'Au Sénégal, la protection des données personnelles relève de la loi n° 2008-12 et de la Commission de protection des Données Personnelles (CDP). La déclaration de ce traitement auprès de la CDP est à vérifier. [À VALIDER]',
+        'Au Sénégal, la protection des données personnelles relève de la loi n° 2008-12 et de la Commission de protection des Données Personnelles (CDP). La déclaration de ce traitement auprès de la CDP est à vérifier, de même que le transfert des données vers l’Union européenne (hébergement à Francfort). [À VALIDER]',
       ],
     },
   ] satisfies PrivacySection[],
