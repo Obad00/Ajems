@@ -104,6 +104,11 @@ function Footer() {
         </div>
         <ul className="space-y-1">
           <li>
+            <Link className="inline-flex min-h-11 items-center underline-offset-4 hover:underline" to="/a-propos">
+              À propos
+            </Link>
+          </li>
+          <li>
             <Link className="inline-flex min-h-11 items-center underline-offset-4 hover:underline" to="/reglement">
               Règlement intérieur
             </Link>
@@ -119,6 +124,16 @@ function Footer() {
   )
 }
 
+/** New page → back to the top (the router keeps the scroll position otherwise). */
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  // Braces matter: recent Chromium returns a Promise from scrollTo, which React would treat as a cleanup.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
+
 export function Layout() {
   return (
     <div className="flex min-h-dvh flex-col">
@@ -128,6 +143,7 @@ export function Layout() {
       >
         Aller au contenu
       </a>
+      <ScrollToTop />
       <Header />
       <main id="contenu" tabIndex={-1} className="flex-1 focus:outline-none">
         <Outlet />

@@ -5,6 +5,7 @@ import { submitMembership } from '../services/submission'
 import { useRepository } from '../storage'
 import { Card } from '../ui/Card'
 import { Stepper } from '../ui/Stepper'
+import { usePageTitle } from '../ui/usePageTitle'
 import { useMembershipDraft, type StepIndex } from './membership/draft'
 import { Step1Identity } from './membership/Step1Identity'
 import { Step2Business } from './membership/Step2Business'
@@ -30,6 +31,7 @@ export function MembershipPage() {
   const [error, setError] = useState<string | null>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const firstRender = useRef(true)
+  usePageTitle(`Adhésion — étape ${step + 1} sur ${STEP_TITLES.length}`)
 
   // Move focus to the step title on every step change (not on first load).
   useEffect(() => {

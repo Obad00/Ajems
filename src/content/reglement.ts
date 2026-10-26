@@ -12,7 +12,7 @@ export type ReglementArticle = {
 export const REGLEMENT = {
   version: 'v0-brouillon',
   title: "Règlement intérieur de l'AJEMS",
-  status: 'Brouillon : texte en attente de validation par le bureau.',
+  status: 'Brouillon : texte en attente de validation par le bureau.',
   articles: [
     { title: 'Article 1 — [À VALIDER]', paragraphs: ['[À VALIDER] Texte à fournir par le bureau.'] },
     { title: 'Article 2 — [À VALIDER]', paragraphs: ['[À VALIDER] Texte à fournir par le bureau.'] },

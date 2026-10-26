@@ -148,6 +148,22 @@ try {
     await shot(errPage, 'erreur-envoi-donnees-conservees')
     await errPage.close()
 
+    // ---------- Public pages ----------
+    const pub = await context.newPage()
+    await pub.goto(`${base}/`)
+    await shot(pub, 'accueil')
+    await pub.getByText("L'adhésion garantit-elle un financement ?").click()
+    await pub.evaluate(() => document.fonts.ready)
+    n += 1
+    await pub.locator('section[aria-labelledby="faq"]').screenshot({ path: `${dir}/${String(n).padStart(2, '0')}-accueil-faq-ouverte.png`, animations: 'disabled' })
+    await pub.goto(`${base}/a-propos`)
+    await shot(pub, 'a-propos')
+    await pub.goto(`${base}/confidentialite`)
+    await shot(pub, 'confidentialite')
+    await pub.goto(`${base}/page-inexistante`)
+    await shot(pub, '404')
+    await pub.close()
+
     // ---------- Règlement page (screen + print) ----------
     const reg = await context.newPage()
     await reg.goto(`${base}/reglement`)

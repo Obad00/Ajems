@@ -3,8 +3,10 @@ import { REGLEMENT } from '../content/reglement'
 import { Button } from '../ui/Button'
 import { Card } from '../ui/Card'
 import { ReglementText } from '../ui/ReglementText'
+import { usePageTitle } from '../ui/usePageTitle'
 
 export function ReglementPage() {
+  usePageTitle('Règlement intérieur')
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 print:p-0">
       <Card className="print-plain space-y-6">
