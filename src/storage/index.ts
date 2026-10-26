@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react'
 import type { MemberRepository } from './MemberRepository'
 import { MockRepository } from './MockRepository'
+import { demoMembers } from './seed'
 
 export type StorageKind = 'mock' | 'supabase'
 
@@ -18,7 +19,7 @@ export function createRepository(): MemberRepository {
     throw new Error('VITE_STORAGE=supabase is not available yet: use VITE_STORAGE=mock.')
   }
   const failWrites = new URLSearchParams(window.location.search).has('simuler-erreur')
-  return new MockRepository({ latency: 600, failWrites })
+  return new MockRepository({ latency: 600, failWrites, seed: demoMembers() })
 }
 
 export const RepositoryContext = createContext<MemberRepository | null>(null)

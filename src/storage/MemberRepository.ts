@@ -11,7 +11,9 @@ export const MEMBER_STATUSES = [
 export type MemberStatus = (typeof MEMBER_STATUSES)[number]['value']
 
 /** A stored member record, as read by the admin. */
-export type Member = MemberInput & {
+export type Member = Omit<MemberInput, 'reglement_version'> & {
+  /** Version accepted at submission time (may differ from the current text). */
+  reglement_version: string
   id: string
   dossier_number: string
   created_at: string
