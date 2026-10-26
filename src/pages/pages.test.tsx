@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
 import { MockRepository } from '../storage/MockRepository'
+import { DEMO_STATS } from '../storage/seed'
 
 function renderAt(path: string) {
   window.history.pushState({}, '', path)
@@ -12,7 +13,10 @@ function renderAt(path: string) {
 describe('public pages', () => {
   it('home: title, main call to action and the financing FAQ answer', async () => {
     renderAt('/')
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent("Ensemble, faisons grandir l'entrepreneuriat à Mermoz-Sacré-Cœur.")
+    const title = screen.getByRole('heading', { level: 1 })
+    expect(title).toHaveTextContent(/^Ensemble, faisons grandir l'entrepreneuriat à Mermoz[-\u2011]Sacré[-\u2011]Cœur\.$/)
+    // The place name must never break: non-breaking hyphens (U+2011).
+    expect(title.textContent).toContain('Mermoz\u2011Sacré\u2011Cœur')
     expect(screen.getAllByRole('link', { name: /Demander mon adhésion/ }).length).toBeGreaterThan(0)
 
     const question = screen.getByText("L'adhésion garantit-elle un financement ?")
@@ -49,5 +53,20 @@ describe('public pages', () => {
   it('unknown path shows the 404 page', () => {
     renderAt('/nimporte-quoi')
     expect(screen.getByRole('heading', { name: 'Page introuvable' })).toBeInTheDocument()
+  })
+
+  it('home stats: computed figures with the demo mention, small figures hidden', async () => {
+    window.history.pushState({}, '', '/')
+    render(<App repository={new MockRepository({ stats: { ...DEMO_STATS, project_holders: null } })} />)
+    const block = await screen.findByRole('region', { name: "L'AJEMS en chiffres" })
+    expect(block).toHaveTextContent('Démonstration — chiffres fictifs')
+    expect(block).toHaveTextContent('24')
+    expect(block).toHaveTextContent('membres acceptés')
+    expect(block).not.toHaveTextContent('porteurs de projet')
+  })
+
+  it('home stats: below the threshold, says that membership is open', async () => {
+    renderAt('/')
+    expect(await screen.findByText('Les adhésions sont ouvertes.')).toBeInTheDocument()
   })
 })

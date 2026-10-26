@@ -29,6 +29,8 @@ export function MembershipPage() {
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Direction of the last step change, for the sideways slide animation.
+  const [direction, setDirection] = useState<'forward' | 'back'>('forward')
   const headingRef = useRef<HTMLHeadingElement>(null)
   const firstRender = useRef(true)
   usePageTitle(`Adhésion — étape ${step + 1} sur ${STEP_TITLES.length}`)
@@ -45,6 +47,7 @@ export function MembershipPage() {
 
   const go = (next: StepIndex) => {
     setError(null)
+    setDirection(next > step ? 'forward' : 'back')
     setStep(next)
   }
 
@@ -70,11 +73,12 @@ export function MembershipPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
-      <header className="mb-6 space-y-2">
-        <p className="text-sm font-semibold tracking-wide text-gold-ink uppercase">Adhésion</p>
-        <h1 className="text-3xl font-bold sm:text-4xl">Demande d'adhésion à l'AJEMS</h1>
-        <p className="text-muted">Environ 10 minutes. Vos réponses restent sur cette page jusqu'à l'envoi.</p>
+    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16">
+      <header className="mb-8 space-y-3">
+        <h1 className="text-4xl font-semibold sm:text-5xl">
+          Demande d'<em className="font-normal">adhésion</em> à l'AJEMS
+        </h1>
+        <p className="text-lg text-muted">Environ 10 minutes. Vos réponses restent sur cette page jusqu'à l'envoi.</p>
       </header>
 
       {repo.kind === 'mock' && (
@@ -87,38 +91,40 @@ export function MembershipPage() {
         <Stepper steps={STEP_TITLES} current={step} />
       </div>
 
-      <Card className="print-plain">
-        <h2 ref={headingRef} tabIndex={-1} className="mb-6 text-2xl font-semibold focus:outline-none">
-          <span className="sr-only">
-            Étape {step + 1} sur {STEP_TITLES.length} :{' '}
-          </span>
-          {STEP_TITLES[step]}
-        </h2>
+      <Card className="print-plain overflow-hidden">
+        <div key={step} className="step-enter" data-dir={direction}>
+          <h2 ref={headingRef} tabIndex={-1} className="mb-6 text-3xl font-semibold focus:outline-none">
+            <span className="sr-only">
+              Étape {step + 1} sur {STEP_TITLES.length} :{' '}
+            </span>
+            {STEP_TITLES[step]}
+          </h2>
 
-        {step === 0 && <Step1Identity values={draft.identity} onNext={saveAndGo('identity', 1)} />}
-        {step === 1 && (
-          <Step2Business values={draft.business} onNext={saveAndGo('business', 2)} onBack={saveAndGo('business', 0)} />
-        )}
-        {step === 2 && <Step3Skills values={draft.skills} onNext={saveAndGo('skills', 3)} onBack={saveAndGo('skills', 1)} />}
-        {step === 3 && (
-          <Step4Reglement
-            values={draft.reglement}
-            firstName={draft.identity.first_name?.trim() ?? ''}
-            lastName={draft.identity.last_name?.trim() ?? ''}
-            onNext={saveAndGo('reglement', 4)}
-            onBack={saveAndGo('reglement', 2)}
-          />
-        )}
-        {step === 4 && (
-          <Step5Summary
-            draft={draft}
-            onEdit={go}
-            onBack={() => go(3)}
-            onSubmit={handleSubmit}
-            submitting={submitting}
-            error={error}
-          />
-        )}
+          {step === 0 && <Step1Identity values={draft.identity} onNext={saveAndGo('identity', 1)} />}
+          {step === 1 && (
+            <Step2Business values={draft.business} onNext={saveAndGo('business', 2)} onBack={saveAndGo('business', 0)} />
+          )}
+          {step === 2 && <Step3Skills values={draft.skills} onNext={saveAndGo('skills', 3)} onBack={saveAndGo('skills', 1)} />}
+          {step === 3 && (
+            <Step4Reglement
+              values={draft.reglement}
+              firstName={draft.identity.first_name?.trim() ?? ''}
+              lastName={draft.identity.last_name?.trim() ?? ''}
+              onNext={saveAndGo('reglement', 4)}
+              onBack={saveAndGo('reglement', 2)}
+            />
+          )}
+          {step === 4 && (
+            <Step5Summary
+              draft={draft}
+              onEdit={go}
+              onBack={() => go(3)}
+              onSubmit={handleSubmit}
+              submitting={submitting}
+              error={error}
+            />
+          )}
+        </div>
       </Card>
     </div>
   )

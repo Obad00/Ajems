@@ -10,9 +10,12 @@ export function ReglementPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 print:p-0">
       <Card className="print-plain space-y-6">
-        <header className="space-y-2 border-b border-line pb-5">
-          <p className="text-sm font-semibold tracking-wide text-gold-ink uppercase print:text-black">AJEMS</p>
-          <h1 className="text-3xl font-bold">{REGLEMENT.title}</h1>
+        <header className="space-y-4 pb-2">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 border-y-2 border-navy py-2 text-sm print:border-black">
+            <span className="font-serif text-base text-navy italic print:text-black">AJEMS</span>
+            <span className="text-muted print:text-black">Version {REGLEMENT.version}</span>
+          </div>
+          <h1 className="text-4xl font-semibold sm:text-5xl">{REGLEMENT.title}</h1>
           <p className="text-sm text-muted print:text-black">
             Version {REGLEMENT.version} — {REGLEMENT.status}
           </p>

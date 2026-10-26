@@ -1,17 +1,18 @@
 import type { ReactNode } from 'react'
 import { PendingBadge } from './PendingBadge'
+import { Rich } from './Rich'
 
-type Props = { eyebrow?: string; title: ReactNode; pending?: boolean; id?: string; children?: ReactNode }
+type Props = { title: string; pending?: boolean; id?: string; children?: ReactNode; className?: string }
 
-export function SectionHeading({ eyebrow, title, pending, id, children }: Props) {
+/** Large left-aligned serif title, optional lead. `*word*` in the title is set in italics. */
+export function SectionHeading({ title, pending, id, children, className = '' }: Props) {
   return (
-    <div className="mb-8 max-w-2xl space-y-2">
-      {eyebrow && <p className="text-sm font-semibold tracking-wide text-gold-ink uppercase">{eyebrow}</p>}
-      <h2 id={id} className="text-3xl font-bold sm:text-4xl">
-        {title}
+    <div className={`max-w-2xl space-y-4 ${className}`}>
+      <h2 id={id} className="text-4xl font-semibold sm:text-5xl lg:text-6xl">
+        <Rich text={title} emClassName="font-normal" />
         <PendingBadge show={!!pending} />
       </h2>
-      {children && <p className="text-muted">{children}</p>}
+      {children && <p className="max-w-xl text-lg text-muted">{children}</p>}
     </div>
   )
 }

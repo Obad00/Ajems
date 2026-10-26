@@ -1,4 +1,5 @@
 import type { MemberInput } from '../schemas/member'
+import type { PublicStats } from '../services/stats'
 
 export const MEMBER_STATUSES = [
   { value: 'nouvelle', label: 'Nouvelle demande' },
@@ -11,7 +12,9 @@ export const MEMBER_STATUSES = [
 export type MemberStatus = (typeof MEMBER_STATUSES)[number]['value']
 
 /** A stored member record, as read by the admin. */
-export type Member = MemberInput & {
+export type Member = Omit<MemberInput, 'reglement_version'> & {
+  /** Version accepted at submission time (may differ from the current text). */
+  reglement_version: string
   id: string
   dossier_number: string
   created_at: string
@@ -33,6 +36,8 @@ export interface MemberRepository {
   list(): Promise<Member[]>
   getById(id: string): Promise<Member | null>
   updateStatus(id: string, status: MemberStatus): Promise<void>
+  /** Public totals for the home page (no individual data, masked below the threshold). */
+  getPublicStats(): Promise<PublicStats>
 }
 
 /** Error with a message safe to show to the visitor (no personal data, no technical details). */

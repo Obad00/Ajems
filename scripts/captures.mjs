@@ -29,16 +29,24 @@ await server.listen()
 const base = 'http://localhost:5199'
 const browser = await chromium.launch()
 
-await rm('captures', { recursive: true, force: true })
 
 try {
   for (const device of VIEWPORTS) {
     const dir = `captures/${device.name}`
+    await rm(dir, { recursive: true, force: true }) // only this run's folder: keeps captures/avant etc.
     await mkdir(dir, { recursive: true })
     const context = await browser.newContext({ ...device, locale: 'fr-FR', reducedMotion: 'reduce' })
     let n = 0
     const shot = async (page, name) => {
       await page.evaluate(() => document.fonts.ready)
+      // Scroll through the page so that scroll-reveal sections are shown, then back to the top.
+      await page.evaluate(async () => {
+        for (let y = 0; y < document.body.scrollHeight; y += 400) {
+          window.scrollTo(0, y)
+          await new Promise((r) => setTimeout(r, 30))
+        }
+      })
+      await page.waitForTimeout(800)
       await page.evaluate(() => window.scrollTo(0, 0))
       n += 1
       await page.screenshot({ path: `${dir}/${String(n).padStart(2, '0')}-${name}.png`, fullPage: true, animations: 'disabled' })
@@ -151,6 +159,7 @@ try {
     // ---------- Public pages ----------
     const pub = await context.newPage()
     await pub.goto(`${base}/`)
+    await pub.waitForTimeout(3200) // street plan finishes drawing
     await shot(pub, 'accueil')
     await pub.getByText("L'adhésion garantit-elle un financement ?").click()
     await pub.evaluate(() => document.fonts.ready)
@@ -163,6 +172,40 @@ try {
     await pub.goto(`${base}/page-inexistante`)
     await shot(pub, '404')
     await pub.close()
+
+    // ---------- Admin (mock auth, fictitious seed data) ----------
+    const adm = await context.newPage()
+    await adm.goto(`${base}/admin`)
+    await adm.getByRole('heading', { name: /Espace bureau/ }).waitFor()
+    await shot(adm, 'admin-connexion')
+    await label(adm, 'Email').fill('bureau@ajems.example')
+    await label(adm, 'Mot de passe').fill('mauvais')
+    await adm.getByRole('button', { name: 'Se connecter' }).click()
+    await adm.getByRole('alert').waitFor()
+    await shot(adm, 'admin-connexion-erreur')
+    await label(adm, 'Mot de passe').fill('demo-ajems-2026')
+    await adm.getByRole('button', { name: 'Se connecter' }).click()
+    await adm.getByText('12 fiches sur 12').waitFor()
+    await shot(adm, 'admin-liste')
+    await adm.getByLabel('Statut', { exact: false }).first().selectOption('nouvelle')
+    await adm.getByRole('searchbox').fill('exemple')
+    await shot(adm, 'admin-liste-filtree')
+    await adm.getByRole('button', { name: 'Réinitialiser' }).click()
+    await adm.getByText('12 fiches sur 12').waitFor()
+    await adm.getByRole('link', { name: /AJEMS-\d{4}-0001/ }).first().click()
+    await adm.getByRole('heading', { level: 1 }).waitFor()
+    await shot(adm, 'admin-fiche')
+    await label(adm, 'Nouveau statut').selectOption('en_examen')
+    await adm.getByRole('button', { name: 'Enregistrer le statut' }).click()
+    await adm.getByText('Statut enregistré.').waitFor()
+    await shot(adm, 'admin-fiche-statut-enregistre')
+    await adm.getByRole('link', { name: 'Imprimer la fiche' }).click()
+    await adm.getByRole('region', { name: 'Signatures' }).waitFor()
+    await shot(adm, 'admin-fiche-imprimable')
+    await adm.emulateMedia({ media: 'print' })
+    await shot(adm, 'admin-fiche-imprimable-impression')
+    if (device.name === '1280') await adm.pdf({ path: `${dir}/fiche-membre-a4.pdf`, format: 'A4' })
+    await adm.close()
 
     // ---------- Règlement page (screen + print) ----------
     const reg = await context.newPage()

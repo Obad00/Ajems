@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { Menu, X } from 'lucide-react'
+import mapUrl from '../assets/mermoz-map.svg?url'
 import { buttonClasses } from './classes'
+import { keepTogether } from './typography'
 
 const NAV = [
   { to: '/', label: 'Accueil', end: true },
@@ -17,7 +19,7 @@ export function Logo() {
         <span aria-hidden className="mt-1.5 h-0.5 w-full bg-gold" />
       </span>
       <span className="hidden max-w-44 text-xs leading-snug text-white/80 lg:block">
-        Alliance des Jeunes Entrepreneurs de Mermoz-Sacré-Cœur
+        {keepTogether('Alliance des Jeunes Entrepreneurs de Mermoz-Sacré-Cœur')}
       </span>
     </Link>
   )
@@ -38,9 +40,8 @@ function Header() {
   }, [open])
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex min-h-11 items-center rounded-md px-3 font-medium text-white hover:bg-white/10 ${
-      isActive ? 'underline decoration-gold decoration-2 underline-offset-8' : ''
-    }`
+    `flex min-h-11 items-center px-3 font-medium text-white ${isActive ? 'text-gold' : ''}`
+  const label = (text: string) => <span className="link-draw pb-0.5">{text}</span>
 
   return (
     <header className="on-dark no-print sticky top-0 z-40 bg-navy text-white">
@@ -50,7 +51,7 @@ function Header() {
         <nav aria-label="Navigation principale" className="hidden items-center gap-1 md:flex">
           {NAV.map((item) => (
             <NavLink key={item.to} to={item.to} end={'end' in item} className={linkClass}>
-              {item.label}
+              {label(item.label)}
             </NavLink>
           ))}
           <Link to="/adhesion" className={buttonClasses('onDark', 'ml-3 min-h-11')}>
@@ -76,7 +77,7 @@ function Header() {
             {NAV.map((item) => (
               <li key={item.to}>
                 <NavLink to={item.to} end={'end' in item} className={linkClass} onClick={() => setOpen(false)}>
-                  {item.label}
+                  {label(item.label)}
                 </NavLink>
               </li>
             ))}
@@ -91,34 +92,52 @@ function Header() {
 }
 
 function Footer() {
+  const footerLink = 'link-draw inline-flex min-h-11 items-center'
   return (
-    <footer className="on-dark no-print mt-16 bg-navy text-white/85">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 text-sm sm:px-6 md:grid-cols-3">
-        <div className="space-y-2">
-          <p className="font-serif text-xl font-bold text-white">AJEMS</p>
-          <p>Alliance des Jeunes Entrepreneurs de Mermoz-Sacré-Cœur, Dakar. Association en cours de formalisation.</p>
+    <footer className="on-dark no-print relative isolate mt-0 overflow-hidden bg-navy text-white/85">
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gold opacity-[0.13]"
+        style={{
+          maskImage: `url(${mapUrl})`,
+          WebkitMaskImage: `url(${mapUrl})`,
+          maskSize: 'cover',
+          WebkitMaskSize: 'cover',
+          maskPosition: '70% 40%',
+          WebkitMaskPosition: '70% 40%',
+        }}
+      />
+      <div className="mx-auto max-w-6xl px-4 pt-14 pb-8 sm:px-6">
+        <div className="grid gap-10 md:grid-cols-12">
+          <div className="space-y-3 md:col-span-5">
+            <p className="font-serif text-4xl font-semibold text-white">AJEMS</p>
+            <p className="max-w-sm">
+              {keepTogether('Alliance des Jeunes Entrepreneurs de Mermoz-Sacré-Cœur')}, Dakar. Association en cours de formalisation.
+            </p>
+          </div>
+          <div className="space-y-2 md:col-span-3">
+            <p className="font-serif text-lg text-gold italic">Contact</p>
+            <p>Téléphone et email [À VALIDER]</p>
+          </div>
+          <ul className="md:col-span-4">
+            <li>
+              <Link className={footerLink} to="/a-propos">
+                À propos
+              </Link>
+            </li>
+            <li>
+              <Link className={footerLink} to="/reglement">
+                Règlement intérieur
+              </Link>
+            </li>
+            <li>
+              <Link className={footerLink} to="/confidentialite">
+                Confidentialité et mentions légales
+              </Link>
+            </li>
+          </ul>
         </div>
-        <div className="space-y-2">
-          <p className="font-semibold text-gold">Contact</p>
-          <p>Téléphone et email [À VALIDER]</p>
-        </div>
-        <ul className="space-y-1">
-          <li>
-            <Link className="inline-flex min-h-11 items-center underline-offset-4 hover:underline" to="/a-propos">
-              À propos
-            </Link>
-          </li>
-          <li>
-            <Link className="inline-flex min-h-11 items-center underline-offset-4 hover:underline" to="/reglement">
-              Règlement intérieur
-            </Link>
-          </li>
-          <li>
-            <Link className="inline-flex min-h-11 items-center underline-offset-4 hover:underline" to="/confidentialite">
-              Confidentialité et mentions légales
-            </Link>
-          </li>
-        </ul>
+        <p className="mt-12 border-t border-gold/40 pt-4 text-xs text-white/65">Plan du quartier © les contributeurs OpenStreetMap (ODbL)</p>
       </div>
     </footer>
   )

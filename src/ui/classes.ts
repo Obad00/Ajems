@@ -3,12 +3,12 @@ import type { ReactNode } from 'react'
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'onDark' | 'light'
 
 const buttonBase =
-  'inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-5 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60'
+  'inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60'
 
 const buttonVariants: Record<ButtonVariant, string> = {
   primary: 'on-dark bg-navy text-white hover:bg-navy-2 active:bg-navy-2',
   secondary: 'border-2 border-gold bg-white text-navy hover:bg-gold-soft',
-  ghost: 'text-navy underline-offset-4 hover:bg-navy/5 hover:underline',
+  ghost: 'text-navy hover:bg-navy/5',
   /** Gold outline on navy backgrounds (header, footer). */
   onDark: 'border-2 border-gold text-white hover:bg-white/10',
   /** Solid white on navy backgrounds: main call to action in the hero. */
